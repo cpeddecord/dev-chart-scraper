@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"io"
 	"github.com/yhat/scrape"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -48,25 +46,19 @@ func getRowHTMLs(n *html.Node) strArr {
 	return ret
 }
 
-func ScrapeChart(body io.ReadCloser) (mapSlice, bool) {
-	defer body.Close()
+func ScrapeChart(h *html.Node) (mapSlice, bool) {
 	var s []HashMap
 
-	root, err := html.Parse(body)
-	if err != nil {
-		panic(err)
-	}
-
-
 	// there's no table head, bail
-	thNode, ok := scrape.Find(root, thMatcher)
-	if (ok != true) {
+	thNode, ok := scrape.Find(h, thMatcher)
+	if (!ok) {
 		return s, false
 	}
+
 	keys := getRowHTMLs(thNode)
 
 	var d []strArr
-	trNodes := scrape.FindAll(root, trMatcher)
+	trNodes := scrape.FindAll(h, trMatcher)
 	for i, n := range trNodes {
 		if i == 0 { continue }
 		d = append(d, getRowHTMLs(n.FirstChild))
@@ -80,6 +72,5 @@ func ScrapeChart(body io.ReadCloser) (mapSlice, bool) {
 		s = append(s, m)
 	}
 
-	fmt.Println(s)
 	return s, true
 }

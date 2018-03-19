@@ -1,37 +1,31 @@
 package main
 
 import (
-	"io"
-	"golang.org/x/net/html"
 	"strings"
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 type strSlice []string
 
-func ScrapeIndex(body io.ReadCloser) strSlice {
-	defer body.Close()
-	var s []string
+func anchorMatcher(n *html.Node) bool {
+	if n.DataAtom == atom.A {
+		a := scrape.Attr(n, "href")
+		return strings.Contains(a, "Film")
+	}
 
-	z := html.NewTokenizer(body)
+	return false
+}
 
-	for {
-		tt := z.Next()
+func ScrapeIndex(h *html.Node) (strSlice) {
+	var s strSlice
 
-		switch {
-		case tt == html.ErrorToken:
-			return s
+	aNodes := scrape.FindAll(h, anchorMatcher)
 
-		case tt == html.StartTagToken:
-			t:= z.Token()
-			isAnchor := t.Data == "a"
-
-			if isAnchor {
-				for _, a := range t.Attr {
-					if a.Key == "href" && strings.Contains(a.Val, "Film") {
-						s = append(s, a.Val)
-					}
-				}
-			}
+	for _, anchor := range aNodes {
+		for _, attr := range anchor.Attr {
+			s = append(s, attr.Val)
 		}
 	}
 
