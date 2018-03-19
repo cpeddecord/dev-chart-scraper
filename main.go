@@ -9,7 +9,16 @@ var chartNotes = rootURL + "notes.php"
 var printRoot = rootURL + "print.php"
 
 func main() {
-	urls := ScrapeIndex(printRoot)
+	indexHTML := GetHTML(printRoot);
+	urls := ScrapeIndex(indexHTML)
 
-	fmt.Println(urls)
+	var h []HashMap
+	for _, url := range urls {
+		chartHTML := GetHTML(url)
+		d, _ := ScrapeChart(chartHTML)
+
+		h = append(h, d...)
+	}
+
+	fmt.Println(h)
 }

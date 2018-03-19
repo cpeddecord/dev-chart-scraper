@@ -1,18 +1,18 @@
 package main
 
 import (
-	"net/http"
+	"io"
 	"golang.org/x/net/html"
 	"strings"
 )
 
 type strSlice []string
 
-func ScrapeIndex(url string) strSlice {
+func ScrapeIndex(body io.ReadCloser) strSlice {
+	defer body.Close()
 	var s []string
 
-	res, _ := http.Get(printRoot)
-	z := html.NewTokenizer(res.Body)
+	z := html.NewTokenizer(body)
 
 	for {
 		tt := z.Next()
