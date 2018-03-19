@@ -6,8 +6,8 @@ import (
 )
 
 // var _ io.Reader = (*os.File)(nil)
-var chart, _ = os.Open("test/chart.html")
-var nullChart, _ = os.Open("test/null-chart.html")
+var chart, _ = os.Open("test/chart")
+var nullChart, _ = os.Open("test/null-chart")
 
 func TestScrapeChart(t *testing.T) {
 	d, _ := ScrapeChart(chart)
